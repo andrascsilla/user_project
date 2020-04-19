@@ -6,6 +6,8 @@ import TableComponent from '../TableComponent';
 import axios from 'axios';
 import AddButton from '../Button';
 import Modal from '../Modal';
+import SearchField from '../SearchField';
+import { useParams } from 'react-router-dom';
 
 axios.defaults.baseURL = ' https://my-json-server.typicode.com/andrascsilla/user_project_db';
 
@@ -22,8 +24,10 @@ function Users() {
   const [isOpenAdd, setModalAdd] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [hours, setHours] = useState(0);
+  const [hours] = useState(0);
   const [modalEdit, setModalEdit] = useState(false);
+  const oneDay = 24 * 60 * 60 * 1000;
+  const { searchString } = useParams();
 
   //GET DATA FROM "BACKEND"
   useEffect(() => {
@@ -47,6 +51,18 @@ function Users() {
       }
     });
     return workedHours;
+  }
+
+  //CALCULATE AVG WORKED HOURS
+  function avgWorkedHours(id) {
+    let hoursPerProject = 0;
+    projects.forEach(project => {
+      if (id === project.userID) {
+        hoursPerProject +=
+          Math.round(Math.abs((Date.parse(project.startDate) - Date.parse(project.endDate)) / oneDay)) * 8;
+      }
+    });
+    return hoursPerProject;
   }
 
   //ADD
@@ -77,7 +93,7 @@ function Users() {
     const user = {
       name: name,
       email: email,
-      hours: hours,
+      // hours: hours,
     };
     axios.put(`/users/${id}`, user).then(resp => {
       const usersWithEditedUser = users.map(user => (user.id === id ? modalEdit : user));
@@ -94,12 +110,36 @@ function Users() {
     });
   }
 
+  //SEARCH
+  useEffect(() => {
+    if (typeof searchString === 'undefined') {
+      axios.get(`/users`).then(resp => {
+        setUsers(resp.data);
+      });
+    } else {
+      axios.get(`/users?name=${searchString}`).then(resp => {
+        setUsers(resp.data);
+      });
+    }
+  }, []);
+
+  function search(event) {
+    axios.get(`/users?name=${event}`).then(res => {
+      setUsers(res.data);
+    });
+  }
+
   const StyledActionButton = styled(Button)`
     margin: 0 10px;
   `;
 
+  const RedSpan = styled.span`
+    color: red;
+  `;
+
   return (
     <Container>
+      <SearchField labelText="Search:" placeholder="Type a name here..." buttonText="Search" onSubmit={search} />
       <AddButton text="Add User" onClick={toggleModalAdd} />
       <Modal
         onClick={toggleModalAdd}
@@ -127,16 +167,10 @@ function Users() {
                 onChange={e => setEmail(e.target.value)}
               />
             </FormGroup>
-            <FormGroup>
+            {/* <FormGroup>
               <Label for="hours">Worked Hours</Label>
-              <Input
-                type="number"
-                name="hours"
-                id="hours"
-                value={e => setHours(e.target.value)}
-                onChange={e => setHours(e.target.value)}
-              />
-            </FormGroup>
+              <Input type="number" name="hours" id="hours" onChange={e => setHours(e.target.value)} />
+            </FormGroup> */}
             <Button>Add User</Button>
           </Form>
         }
@@ -146,7 +180,14 @@ function Users() {
           <tr key={user.id}>
             <td>{user.name}</td>
             <td>{user.email}</td>
-            <td>{user.workedHours + workedhours(user.id)}</td>
+            {avgWorkedHours(user.id) < workedhours(user.id) ? (
+              <td>
+                <RedSpan>{user.workedHours + workedhours(user.id)}</RedSpan>
+              </td>
+            ) : (
+              <td>{user.workedHours + workedhours(user.id)}</td>
+            )}
+
             <td>
               <Button
                 color="info"
@@ -190,7 +231,7 @@ function Users() {
                           value={modalEdit.email}
                         />
                       </FormGroup>
-                      <FormGroup>
+                      {/* <FormGroup>
                         <Label for="hours">Worked Hours</Label>
                         <Input
                           type="number"
@@ -199,7 +240,7 @@ function Users() {
                           onChange={e => setModalEdit({ ...modalEdit, hours: e.target.value })}
                           value={modalEdit.hours}
                         />
-                      </FormGroup>
+                      </FormGroup> */}
                       <Button>Update User</Button>
                     </Form>
                   }
