@@ -9,6 +9,7 @@ import Users from './shared/components/Users';
 import Projects from './shared/components/Projects';
 import * as serviceWorker from './serviceWorker';
 import styled from 'styled-components';
+import 'react-datepicker/dist/react-datepicker.css';
 require('dotenv').config();
 
 const StyledNav = styled(Nav)`
@@ -50,7 +51,7 @@ ReactDOM.render(
           <Route path="/users">
             <Users />
           </Route>
-          <Route path="/">
+          <Route path="/:searchString?">
             <App />
           </Route>
         </Switch>
