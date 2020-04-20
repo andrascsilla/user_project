@@ -11,6 +11,14 @@ import { useParams } from 'react-router-dom';
 
 axios.defaults.baseURL = ' https://my-json-server.typicode.com/andrascsilla/user_project_db';
 
+export const StyledActionButton = styled(Button)`
+  margin: 0 10px;
+`;
+
+const RedSpan = styled.span`
+  color: red;
+`;
+
 const header = [
   { id: '1', value: 'Name' },
   { id: '2', value: 'Email' },
@@ -27,7 +35,6 @@ function Users() {
   const [hours] = useState(0);
   const [modalEdit, setModalEdit] = useState(false);
   const oneDay = 24 * 60 * 60 * 1000;
-  const { searchString } = useParams();
 
   //GET DATA FROM "BACKEND"
   useEffect(() => {
@@ -112,30 +119,16 @@ function Users() {
 
   //SEARCH
   useEffect(() => {
-    if (typeof searchString === 'undefined') {
-      axios.get(`/users`).then(resp => {
-        setUsers(resp.data);
-      });
-    } else {
-      axios.get(`/users?name=${searchString}`).then(resp => {
-        setUsers(resp.data);
-      });
-    }
+    axios.get(`/users`).then(resp => {
+      setUsers(resp.data);
+    });
   }, []);
 
-  function search(event) {
-    axios.get(`/users?name=${event}`).then(res => {
+  function search(user) {
+    axios.get(`/users?name=${user}`).then(res => {
       setUsers(res.data);
     });
   }
-
-  const StyledActionButton = styled(Button)`
-    margin: 0 10px;
-  `;
-
-  const RedSpan = styled.span`
-    color: red;
-  `;
 
   return (
     <Container>

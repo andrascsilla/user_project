@@ -51,7 +51,7 @@ ReactDOM.render(
           <Route path="/users">
             <Users />
           </Route>
-          <Route path="/:searchString?">
+          <Route path="/">
             <App />
           </Route>
         </Switch>
