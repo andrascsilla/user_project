@@ -123,7 +123,13 @@ function Projects() {
     <Container>
       <SearchField labelText="Search:" placeholder="Type a name here..." buttonText="Search" onSubmit={search} />
       <AddButton text="Add Button" onClick={toggleModalAdd} />
-      <Form>
+      <Form
+        onSubmit={e => {
+          e.preventDefault();
+          console.log(startDate);
+          console.log(endDate);
+        }}
+      >
         <DatePicker
           selected={startDate}
           onChange={date => console.log(JSON.stringify(date))}
