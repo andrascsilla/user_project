@@ -7,7 +7,6 @@ import axios from 'axios';
 import AddButton from '../Button';
 import Modal from '../Modal';
 import SearchField from '../SearchField';
-import { useParams } from 'react-router-dom';
 
 axios.defaults.baseURL = ' https://my-json-server.typicode.com/andrascsilla/user_project_db';
 

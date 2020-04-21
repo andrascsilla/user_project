@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useParams } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import 'swagger-ui-react/swagger-ui.css';
 import TableComponent from '../TableComponent';
@@ -119,6 +119,15 @@ function Projects() {
     });
   }
 
+  //DATE FILTER
+  function dateFilter() {
+    axios.get('projects').then(res => {
+      let result = projects.filter(project => project.startDate < startDate && project.endDate > endDate);
+      console.log(result);
+      setProjects(result);
+    });
+  }
+
   return (
     <Container>
       <SearchField labelText="Search:" placeholder="Type a name here..." buttonText="Search" onSubmit={search} />
@@ -126,13 +135,12 @@ function Projects() {
       <Form
         onSubmit={e => {
           e.preventDefault();
-          console.log(startDate);
-          console.log(endDate);
+          dateFilter();
         }}
       >
         <DatePicker
           selected={startDate}
-          onChange={date => console.log(JSON.stringify(date))}
+          onChange={date => setStartDate(date)}
           selectsStart
           startDate={startDate}
           endDate={endDate}
@@ -143,7 +151,6 @@ function Projects() {
           selectsEnd
           startDate={startDate}
           endDate={endDate}
-          minDate={startDate}
         />
         <Button>Filter</Button>
       </Form>
